@@ -7,7 +7,7 @@ gen_server to throttle arbitrary requests
 
 Default throttle (named :w1s) will allow 1 request per second
 
-```
+```elixir
 iex(3)> alias Throttlex.Server, as: T
 nil
 iex(4)> alias Throttlex.Super, as: S
@@ -24,7 +24,7 @@ iex(7)> 18:37:14.586 [info] Throttle: ending at {18,37,14}
 
 ```
 ### register a throttle ###
-```
+```elixir
 
 iex(8)> foo = S.Tex.new(name: :foo, timeout: 1500)
 Throttlex.Super.Tex[name: :foo, timeout: 1500, wait: 0, queue: 0]
