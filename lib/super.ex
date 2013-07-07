@@ -1,6 +1,6 @@
 defmodule Throttlex.Super do
 	use Supervisor.Behaviour
-	def start_link do
+	def start_link(_) do
 		:supervisor.start_link(__MODULE__, 1)
 	end
 	defrecord Tex, name: :w1s, timeout: 1000, wait: 0, queue: 0
