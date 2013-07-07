@@ -14,15 +14,15 @@ defmodule Throttlex.Server do
 		throttle(:w1s)
 	end
 	def throttle(name) do
-          Lager.info "Throttle: Starting at #{inspect :erlang.time}"
-          result = :gen_server.call :throttlex, {:throttle,name}
-          Lager.info "sleeping for: #{result}"
-          timer_result = :timer.sleep(result)
-	  Lager.info "Timer Result was: #{timer_result}"
-          :gen_server.cast :throttlex, {:done,name}
-          Lager.info "Throttle: ending at #{inspect :erlang.time}"
-	  result
-        end
+      Lager.info "Throttle: Starting at #{inspect :erlang.time}"
+      result = :gen_server.call :throttlex, {:throttle,name}
+      Lager.info "sleeping for: #{result}"
+      timer_result = :timer.sleep(result)
+	  	Lager.info "Timer Result was: #{timer_result}"
+      :gen_server.cast :throttlex, {:done,name}
+      Lager.info "Throttle: ending at #{inspect :erlang.time}"
+	  	result
+	end
 	
 	def up_tex(tex) do
 		tex.update wait: tex.wait + tex.timeout, queue: tex.queue + 1
@@ -51,19 +51,19 @@ defmodule Throttlex.Server do
 		{:noreply,new_state}
 	end
 	
-        def handle_call({:throttle,name},_from,state) do
+	def handle_call({:throttle,name},_from,state) do
 		case state.by_name[name] do
 		  nil -> 
-			Lager.error "can't find throttle named: #{inspect name}"	
-			Lager.error "available throttles: #{inspect ListDict.keys(state.by_name)}"
-			{:reply,0,state}
+				Lager.error "can't find throttle named: #{inspect name}"	
+				Lager.error "available throttles: #{inspect ListDict.keys(state.by_name)}"
+				{:reply,0,state}
 		  tex -> 
-                	tex = up_tex(tex)
-			state = update_state(state,tex)
-			Lager.info "wait? #{tex.wait}"
-                	{:reply,tex.wait,state}
+      	tex = up_tex(tex)
+				state = update_state(state,tex)
+				Lager.info "wait? #{tex.wait}"
+        {:reply,tex.wait,state}
 		end
-        end
+	end
         def handle_cast({:done,name},state) do
 		case state.by_name[name] do
 			nil -> Lager.error "cast :done no name #{name}"
@@ -75,14 +75,7 @@ defmodule Throttlex.Server do
                 		{:noreply,state}
 			end
         end
-        def work_it do
-          lc x inlist [1,2,3,4,5,6] do
-                spawn(Throttle,:throttlex,[])
-          end
-          lc x inlist [1,2,3,4,5,6] do
-                spawn(Throttle,:throttlex,[])
-          end
-        end
+        
         def init(state) do
 		Lager.info "Starting Throttle Server"
 		Lager.info inspect state
@@ -92,7 +85,7 @@ defmodule Throttlex.Server do
                 :gen_server.call :throttlex, :stop
         end
 	def handle_call(:stop,_from,state) do
-                IO.puts "shutting down"
+                IO.puts "Throttlex.Server.stop: shutting down"
                 {:stop,:normal,:shutdown_ok,state}
         end
 end
