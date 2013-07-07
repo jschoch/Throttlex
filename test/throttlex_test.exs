@@ -1,29 +1,5 @@
 Code.require_file "test_helper.exs", __DIR__
-defmodule TWork do
-	require Lager
-	def go(name) do
-		result = Throttlex.Server.throttle(name)	
-		Lager.info "TWork.go: #{inspect self} result: #{result}"
-	end
-  def mon([]) do
- 		Lager.info "Processes all done" 
-  end	
-  def mon([h|t]) do
-  	thing = :erlang.monitor(:process, h)	
-  	Lager.info inspect thing
-  	mon t
-  end
-	def start(name) do
-		pids = lc x inlist Enum.to_list 1..10 do
-			Lager.info "TWork.start: Starting spawn #{x}"
-			pid = spawn(TWork,:go,[name])	
-			Lager.info "TWork.start Ending spawn #{x}"
-			pid
-		end	
-		IO.puts inspect pids
-		mon(pids)	
-	end
-end
+
 defmodule ThrottlexTest do
   use ExUnit.Case
   alias Throttlex.Server, as: T
@@ -36,9 +12,11 @@ defmodule ThrottlexTest do
     T.stop
   end
   test "super works on crash" do
-     #S.start_link(1)
-     #T.throttle(:fail)
-    #assert(false)
+     #S.start_link
+     #T.stop
+     #{:error,{:shutdown,{:failed_to_start_child,_module,{status,_pid}}}} = S.start_link
+     
+		#assert(status == :already_started)
   end
   test "goes fast" do
 		T.stop
@@ -51,7 +29,7 @@ defmodule ThrottlexTest do
     T.start_link(state)
 		res = TWork.start(:fast)
 		#res2 = TWwork.start(:fast)
-		:timer.sleep(1100)
+		:timer.sleep(1200)
   end
   test "record tests" do
 		tex = S.Tex.new
@@ -77,8 +55,8 @@ defmodule ThrottlexTest do
 		tex = S.Tex.new
 		state = S.Throttles.new(by_name: [{tex.name, tex}], count: 1)
 		T.start_link(state)
-		state = T.add_tex(state,foo)
-		T.update(state)
+		#state = T.add_tex(state,foo)
+		T.add_tex(foo)
 		result = T.throttle(:register_new_throttle)
 		IO.puts("result: #{inspect result}")
 		assert(15 == result)

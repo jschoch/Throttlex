@@ -17,8 +17,7 @@ defmodule Throttlex.Server do
       Lager.info "Throttle: Starting at #{inspect :erlang.time}"
       result = :gen_server.call :throttlex, {:throttle,name}
       Lager.info "sleeping for: #{result}"
-      timer_result = :timer.sleep(result)
-	  	Lager.info "Timer Result was: #{timer_result}"
+      :timer.sleep(result)
       :gen_server.cast :throttlex, {:done,name}
       Lager.info "Throttle: ending at #{inspect :erlang.time}"
 	  	result
@@ -33,7 +32,6 @@ defmodule Throttlex.Server do
 	def update_state(state,tex) do
 		new_list = lc {name, e} inlist state.by_name do
 			if e.name == tex.name do
-				IO.puts "found #{e.name}"
 				[{tex.name,tex}]
 			else
 				[{e.name, e}]
@@ -43,6 +41,20 @@ defmodule Throttlex.Server do
 	end
 	def add_tex(state,tex) do
 		state.by_name state.by_name ++ [{tex.name, tex}]
+	end
+	def get_tex_count do
+		:gen_server.call :throttlex, :get_tex_count	
+	end
+	def handle_call(:get_tex_count,_from,state) do
+		res = Enum.count state.by_name	
+		{:reply,res,state}
+	end
+	def add_tex(tex) do
+		:gen_server.cast :throttlex, {:add_tex, tex	}
+	end
+	def handle_cast({:add_tex,tex},state) do
+		state = add_tex(state,tex)
+		{:noreply, state}	
 	end
 	def update(state) do
 		:gen_server.cast :throttlex, {:update,state}
@@ -60,23 +72,23 @@ defmodule Throttlex.Server do
 		  tex -> 
       	tex = up_tex(tex)
 				state = update_state(state,tex)
-				Lager.info "wait? #{tex.wait}"
+				Lager.debug "wait? #{tex.wait}"
         {:reply,tex.wait,state}
 		end
 	end
-        def handle_cast({:done,name},state) do
+	
+	def handle_cast({:done,name},state) do
 		case state.by_name[name] do
 			nil -> Lager.error "cast :done no name #{name}"
 				{:noreply,state}
 			tex -> 
-                		tex = tex.wait tex.wait - tex.timeout
+        tex = tex.wait tex.wait - tex.timeout
 				state = update_state(state,tex)
-                		IO.puts "Wait #{tex.name} is now: #{tex.wait}"
-                		{:noreply,state}
+        {:noreply,state}
 			end
         end
         
-        def init(state) do
+	def init(state) do
 		Lager.info "Starting Throttle Server"
 		Lager.info inspect state
                 {:ok, state}
