@@ -7,8 +7,7 @@ gen_server to throttle arbitrary requests
 
 Default throttle (named :w1s) will allow 1 request per second
 
-...
-
+```
 iex(3)> alias Throttlex.Server, as: T
 nil
 iex(4)> alias Throttlex.Super, as: S
@@ -23,11 +22,10 @@ iex(6)> T.throttle
 1000
 iex(7)> 18:37:14.586 [info] Throttle: ending at {18,37,14}
 
-...
-
+```
 ### register a throttle ###
+```
 
-...
 iex(8)> foo = S.Tex.new(name: :foo, timeout: 1500)
 Throttlex.Super.Tex[name: :foo, timeout: 1500, wait: 0, queue: 0]
 iex(9)> T.add_tex(foo)
@@ -37,6 +35,5 @@ iex(11)> T.throttle(:foo)
 18:40:56.416 [info] sleeping for: 1500
 1500
 iex(12)> 18:40:57.917 [info] Throttle: ending at {18,40,57}
-...
-
+```
 ** TODO: add more tests **
