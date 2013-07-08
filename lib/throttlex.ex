@@ -2,7 +2,7 @@ defmodule Throttlex.Server do
 	use GenServer.Behaviour
         require Lager
         def start_link(state) do
-                :gen_server.start_link({:local,:throttlex},__MODULE__,state,[])
+                :gen_server.start_link({:global,:throttlex},__MODULE__,state,[])
         end
         #def done do
           #Lager.info "Throttle: Starting at #{inspect :erlang.time}"
