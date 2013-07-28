@@ -4,32 +4,27 @@ defmodule ThrottlexTest do
   use ExUnit.Case
   alias Throttlex.Server, as: T
   alias Throttlex.Super, as: S
-  def startup do
-		IO.puts "starting"
+  alias Throttlex, as: A
+  setup_all do
+	  IO.puts "starting"
+	  #A.start(:normal,[])
+	  #IO.puts "Throttlex Server Started"
+	  :ok
   end
-  def teardown do
+  teardown_all do
   	IO.puts "shutting down"
-    T.stop
-  end
-  test "super works on crash" do
-     #S.start_link
-     #T.stop
-     #{:error,{:shutdown,{:failed_to_start_child,_module,{status,_pid}}}} = S.start_link
-     
-		#assert(status == :already_started)
+    #A.stop
+    :application.stop(:throttlex)
+	:ok
   end
   test "goes fast" do
-		T.stop
-		tex = S.Tex.new
 		fast = S.Tex.new(name: :fast,timeout: 100)
-		crap = [{tex.name,tex}]
-		#crap = ListDict.put(crap,fast.name,fast)
-    state = S.Throttles.new(by_name: crap, count: 1)
-		state = T.add_tex(state,fast)
-    T.start_link(state)
+		state = T.add_tex(fast)
 		res = TWork.start(:fast)
-		#res2 = TWwork.start(:fast)
-		:timer.sleep(1200)
+		count = Enum.count(res)
+		sum = Enum.reduce(res,0,fn(i,acc) -> i + acc end)
+		assert(count == 10)
+		assert(sum == 5500)
   end
   test "record tests" do
 		tex = S.Tex.new
@@ -47,26 +42,17 @@ defmodule ThrottlexTest do
 		state = T.update_state(state,tex)
 		keys = ListDict.keys(state.by_name)
 		assert([:w1s,:foo] == keys)
-	
-
   end
   test "register new throttle" do
-		foo = S.Tex.new(name: :register_new_throttle,timeout: 15)
-		tex = S.Tex.new
-		state = S.Throttles.new(by_name: [{tex.name, tex}], count: 1)
-		T.start_link(state)
-		#state = T.add_tex(state,foo)
+		foo = S.Tex.new(name: :register_new_throttle,timeout: 55)
 		T.add_tex(foo)
 		result = T.throttle(:register_new_throttle)
+		{time,val} = :timer.tc(fn -> T.throttle(:register_new_throttle) end)
 		IO.puts("result: #{inspect result}")
-		assert(15 == result)
-	
+		assert(result == 55)
   end
   test "default throttle works" do
-    #S.start_link(1)
     tex = S.Tex.new
-    state = S.Throttles.new(by_name: [{tex.name, tex}], count: 1)
-    T.start_link(state)
     wait = T.throttle
     assert(1000 == wait)
   end

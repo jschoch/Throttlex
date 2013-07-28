@@ -1,3 +1,15 @@
+defmodule Throttlex do
+	use Application.Behaviour
+  def start(_type, args) do
+  	IO.puts "GET READY  TO THROTTLE"
+    Throttlex.Super.start_link
+  end
+  def stop(_state) do
+    IO.puts "Shuttding down App"
+  end
+end
+
+
 defmodule Throttlex.Super do
 	use Supervisor.Behaviour
 	def start_link do

@@ -3,13 +3,13 @@ defmodule Throttlex.Mixfile do
 
   def project do
     [ app: :throttlex,
-      version: "0.0.1",
+      version: "0.0.2",
       deps: deps ]
   end
 
   # Configuration for the OTP application
   def application do
-    [applications: [:lager]]
+    [registered: [:throttlex], mod: { Throttlex, []}, applications: [:lager]]
   end
 
   # Returns the list of dependencies in the format:

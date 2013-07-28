@@ -1,25 +1,20 @@
 defmodule Throttlex.Server do
 	use GenServer.Behaviour
-        require Lager
-        def start_link(state) do
-                :gen_server.start_link({:global,:throttlex},__MODULE__,state,[])
-        end
-        #def done do
-          #Lager.info "Throttle: Starting at #{inspect :erlang.time}"
-          #res = :gen_server.cast :throttlex, :done
-          #Lager.info "Throttle: ending at #{inspect :erlang.time} res: #{res}"
-	  #res
-        #end
+  require Lager
+  def start_link(state) do
+    :gen_server.start_link({:local,:throttlex},__MODULE__,state,[])
+  end
+  def done do
+ 		res = :gen_server.cast :throttlex, {:done,:w1s} 
+  end
+  def done(name) do
+  	res = :gen_server.cast :throttlex, {:done,name}
+  end
 	def throttle do
 		throttle(:w1s)
 	end
 	def throttle(name) do
-      Lager.info "Throttle: Starting at #{inspect :erlang.time}"
       result = :gen_server.call :throttlex, {:throttle,name}
-      Lager.info "sleeping for: #{result}"
-      :timer.sleep(result)
-      :gen_server.cast :throttlex, {:done,name}
-      Lager.info "Throttle: ending at #{inspect :erlang.time}"
 	  	result
 	end
 	
@@ -91,11 +86,11 @@ defmodule Throttlex.Server do
 	def init(state) do
 		Lager.info "Starting Throttle Server"
 		Lager.info inspect state
-                {:ok, state}
-        end
-        def stop do
-                :gen_server.call :throttlex, :stop
-        end
+    {:ok, state}
+  end
+  def stop do
+    :gen_server.call :throttlex, :stop
+  end
 	def handle_call(:stop,_from,state) do
                 IO.puts "Throttlex.Server.stop: shutting down"
                 {:stop,:normal,:shutdown_ok,state}
