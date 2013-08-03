@@ -53,4 +53,7 @@ defmodule ThrottlexTest do
     wait = T.throttle
     assert(1000 == wait)
   end
+  test "unknown auto_throttle" do
+    #T.auto_throttle(:nope)
+  end
 end

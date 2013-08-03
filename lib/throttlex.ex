@@ -87,7 +87,8 @@ defmodule Throttlex.Server do
 		  nil -> 
 				Lager.error "can't find throttle named: #{inspect name}"	
 				Lager.error "available throttles: #{inspect ListDict.keys(state.by_name)}"
-				{:reply,0,state}
+        throw("Throttlex: no throttle found #{name} available #{inspect ListDict.keys(state.by_name)}")
+				{:reply,:error,state}
 		  tex -> 
       	tex = up_tex(tex)
 				state = update_state(state,tex)

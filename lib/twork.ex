@@ -1,9 +1,9 @@
 defmodule TWork do
 	require Lager
 	def go(name,pid) do
-		result = Throttlex.Server.throttle(name)	
-		:timer.sleep(result)
-		Throttlex.Server.done
+    result = Throttlex.Server.throttle(name)  
+    :timer.sleep(result)
+    Throttlex.Server.done(name)
 		pid <- {:ok, result}
 		Lager.info "TWork.go: #{inspect self} slept: #{result}"
 		exit(:normal)
