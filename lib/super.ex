@@ -31,7 +31,7 @@ defmodule Throttlex.Super do
         end 
       doh -> 
         IO.puts "problem with :application.env #{inspect doh}"
-        []
+        throttles = []
     end
     throttles = [{tex.name,tex}|throttles]
     IO.puts "throttles: #{inspect throttles}"
