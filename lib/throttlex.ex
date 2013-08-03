@@ -27,7 +27,11 @@ defmodule Throttlex.Server do
 
   def print_state do
     state = :gen_server.call :throttlex, :get_state
-    Enum.each state.by_name,fn(t) ->  IO.puts inspect t end
+    case state.by_name do
+      list when is_list(list) -> Enum.each state.by_name,fn(t) ->  IO.puts inspect t end
+      doh -> IO.puts "ERROR #{inspect doh}"
+    end
+    state
   end	
   def handle_call :get_state,_from,state do
     {:reply,state,state}
