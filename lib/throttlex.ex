@@ -14,10 +14,24 @@ defmodule Throttlex.Server do
 		throttle(:w1s)
 	end
 	def throttle(name) do
-      result = :gen_server.call :throttlex, {:throttle,name}
-	  	result
+      :gen_server.call :throttlex, {:throttle,name}
 	end
-	
+  def auto_throttle do
+    auto_throttle(:w1s)
+  end
+  def auto_throttle(name) do
+    wait = throttle(name)
+    :timer.sleep(wait)
+    done(name)
+  end
+
+  def print_state do
+    state = :gen_server.call :throttlex, :get_state
+    Enum.each state.by_name,fn(t) ->  IO.puts inspect t end
+  end	
+  def handle_call :get_state,_from,state do
+    {:reply,state,state}
+  end
 	def up_tex(tex) do
 		tex.update wait: tex.wait + tex.timeout, queue: tex.queue + 1
 	end
@@ -57,6 +71,12 @@ defmodule Throttlex.Server do
 	def handle_cast({:update,new_state},state) do
 		{:noreply,new_state}
 	end
+  def list do
+    :gen_server.call :throttlex,:list
+  end
+  def handle_call(:list,_from,state) do
+    {:reply, state.by_name,state}
+  end
 	
 	def handle_call({:throttle,name},_from,state) do
 		case state.by_name[name] do

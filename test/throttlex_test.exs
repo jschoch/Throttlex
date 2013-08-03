@@ -7,13 +7,10 @@ defmodule ThrottlexTest do
   alias Throttlex, as: A
   setup_all do
 	  IO.puts "starting"
-	  #A.start(:normal,[])
-	  #IO.puts "Throttlex Server Started"
 	  :ok
   end
   teardown_all do
   	IO.puts "shutting down"
-    #A.stop
     :application.stop(:throttlex)
 	:ok
   end

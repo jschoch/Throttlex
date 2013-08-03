@@ -9,7 +9,12 @@ defmodule Throttlex.Mixfile do
 
   # Configuration for the OTP application
   def application do
-    [registered: [:throttlex], mod: { Throttlex, []}, applications: [:lager]]
+    throttles = 
+      [
+        [name: :w2s, timeout: 2000],
+        [name: :w3s, timeout: 3000]
+      ]
+    [env: [add_throttles: throttles], registered: [:throttlex], mod: { Throttlex, []}, applications: [:lager]]
   end
 
   # Returns the list of dependencies in the format:
